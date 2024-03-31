@@ -1,40 +1,34 @@
 'use client';
-import { useState } from "react";
-import Column from "./column"
-import NewColumnForm from "./forms/newColumnForm"
+import { RoomProvider } from "../liveblocks.config";
+import { LiveList } from "@liveblocks/client";
+import { ClientSideSuspense } from "@liveblocks/react";
+import Columns from "./columns";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
  
-const defaultColumns=[
-     {columnId:"col1" , name:"TODO" , index:0},
-     {columnId:"col2" , name:"in-progess" , index:1},
-     {columnId:"col3" , name:"Done" , index:2},
-     ];
-
-export type cardTypes={
-    name:string,
-    id:string,
-    index:number
-    columnId:string
-};
-
-const defaultCards=[
-    {id:'asdf' , name:'task 1' , index:0 , columnId:'col1'},
-    {id:'asdz' , name:'task 2' , index:1 , columnId:'col1'},
-    {id:'asdu' , name:'task 5' , index:3 , columnId:'col2'},
-    {id:'asdx' , name:'task 3' , index:2 , columnId:'col3'},
-    ];   
-
-export default function Board(){
-    const[cards,setCards]=useState(defaultCards);
-    const[columns,setColumns]=useState(defaultColumns);
+export default function Board({id }:{id:string}) {
     return(
-        <div className="flex gap-4 ">
-            {columns.map(column=>(
-                <Column {...column} 
-                key={column.columnId}
-                setCards={setCards}
-                cards={cards.sort((a,b)=>a.index-b.index).filter(c=> c.columnId===column.columnId)}/>
-            ))}
-            <NewColumnForm/>
-        </div>
+        <RoomProvider 
+        id={id} 
+        initialPresence={{}} 
+        initialStorage={{
+            columns:new LiveList(),
+            cards:new LiveList()
+        }}>
+        <ClientSideSuspense fallback={(<div>LOADING...</div>)}>{()=>(
+            <>
+            <div className="flex gap-2 justify-end ">
+                <Link 
+                className="flex gap-2 items-center btn"
+                href={`/boards/${id}/settings`}>
+                <FontAwesomeIcon icon={faCog}/>
+                Settings
+                </Link>
+            </div>
+            <Columns/>
+            </>
+        )}</ClientSideSuspense>
+        </RoomProvider>
     )
 }
