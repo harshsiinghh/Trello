@@ -2,20 +2,21 @@
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { removeEmailToBoard } from "../actions/boardActions";
+import { removeEmailFromBoard} from "../actions/boardActions";
 import { useRouter } from "next/navigation";
+import { RoomAccesses } from "@liveblocks/node";
 
-export default function AccessEmailList({boardId,emails}:{boardId:string,emails:string[]}){
+export default function AccessEmailList({boardId,usersAccesses}:{boardId:string,usersAccesses:RoomAccesses}){
     const router=useRouter();
-    async function handleDelete(email:string){
-        await removeEmailToBoard(boardId,email);
+    async function handleDelete(emailToDelete:string){
+        await removeEmailFromBoard(boardId,emailToDelete);
         router.refresh()
     }
 
     return(
         <div className="max-w-xs">
-        {emails.map(email=>(
-            <div className="flex gap-2 my-2 items-center justify-between max-w-xs border rounded-md">
+        {Object.keys(usersAccesses).map(email=>(
+            <div key={email} className="flex gap-2 my-2 items-center justify-between max-w-xs border rounded-md">
                 {email} <button className="btn" onClick={()=>handleDelete(email)}>
                     <FontAwesomeIcon icon={faTrash}/>
                 </button>

@@ -2,6 +2,10 @@ import { ReactSortable } from "react-sortablejs";
 import { Cards, useMutation, useStorage } from "../liveblocks.config";
 import { shallow } from "@liveblocks/client";
 import NewCardForm from "./forms/newCardForm";
+import { FormEvent, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose, faEllipsis, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Card from "./card";
 
 type columnProps={
     columnId:string
@@ -9,6 +13,9 @@ type columnProps={
 }   
 
 export default function Column({columnId ,name}: columnProps){
+
+    const [renameMode,setRenameMode]=useState(false);
+
     const columnsCards= useStorage<Cards[]>(root=>{
         return root.cards
         .filter(card=>card.columnId===columnId)
@@ -24,6 +31,10 @@ const updateCards= useMutation(({storage} ,index, updateData )=>{
     }
 },[])
 
+const updateColumn = useMutation(({storage},id,newName)=>{
+const columns=storage.get('columns');
+columns.find(c=>c.toObject().id===id)?.set('name',newName)
+},[])
 
 const setTaskOrderForColumns =useMutation(({storage}, sortedCards:Cards[] , newColumnid )=>{
     const idOfSortedCards=sortedCards.map(c=>c.id.toString());
@@ -37,10 +48,51 @@ const setTaskOrderForColumns =useMutation(({storage}, sortedCards:Cards[] , newC
     })
 },[])
 
+function handleRename(ev:FormEvent){
+ev.preventDefault();
+const input=(ev.target as HTMLFormElement).querySelector('input');
+if(input){
+    const newColumnName=input.value;
+    updateColumn(columnId,newColumnName);
+    setRenameMode(false);
+}
+}
+
+const deleteColumn=useMutation(({storage},columnId)=>{
+const columns= storage.get("columns")
+const columnIndex=columns.findIndex(c=>c.toObject().id===columnId)
+columns.delete(columnIndex);
+},[])
+
     return(
         <div className="w-48 shadow-sm bg-white rounded-md p-2">
-            <h3>{name} </h3>
-            {columnsCards && (
+            {!renameMode && (
+            <div className="flex justify-between mx-2">
+            <h3 onClick={()=>setRenameMode(true)}>{name} </h3>
+            <button className="text-gray-300 "><FontAwesomeIcon icon={faEllipsis}/></button>
+            </div>
+            )}
+            {renameMode && (
+                <div>
+                Edit Name
+                <form onSubmit={handleRename}>
+                <input type="text" className="mb-2" defaultValue={name} />
+                <button type="submit" className="w-full items-center flex gap-2 justify-center ">
+                <FontAwesomeIcon icon={faSave}/>
+                Save</button>
+                </form>
+                <button 
+                onClick={()=>deleteColumn(columnId)}
+                className="mt-2 w-full text-white bg-red-500 p-2 items-center justify-center rounded-md flex gap-2">
+                <FontAwesomeIcon icon={faTrash}/>
+                Delete</button>
+                <button onClick={()=>{setRenameMode(false)}} className="flex w-full mt-2 p-2 justify-center uppercase text-sm text-gray-400 items-center gap-2">
+                <FontAwesomeIcon icon={faClose}/>
+                Cancel Edit</button>
+                </div>
+                 
+            )}
+            {!renameMode && columnsCards && (
             <>
             <ReactSortable 
             list={columnsCards} 
@@ -50,14 +102,14 @@ const setTaskOrderForColumns =useMutation(({storage}, sortedCards:Cards[] , newC
             ghostClass="opacity-40"
             >
             {columnsCards.map(card=>(
-                <div key={card.id}className="border p-4 my-2 rounded-md">
-                    <span>{card.name}</span>
-                </div>
+                <Card id={card.id} name={card.name}/>
             ))}
             </ReactSortable>
             </>
             )}
-            <NewCardForm columnId={columnId}/>
+            {!renameMode && (
+                <NewCardForm columnId={columnId}/>
+            )}
         </div>
     )
 }

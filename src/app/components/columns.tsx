@@ -1,5 +1,4 @@
 'use client'
-
 import {Columns, useMutation, useStorage } from "../liveblocks.config"
 import Column from "@/app/components/column";
 import NewColumnForm from "./forms/newColumnForm"

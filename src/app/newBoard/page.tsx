@@ -6,7 +6,7 @@ import { createBoard } from "../actions/boardActions";
 export default function newBoardPage(){
 async function handleNewBoardSubmit(formdata:FormData){
     const boardName=formdata.get('name')?.toString() || "";
-    const {id}=await createBoard(boardName as string);
+    const {id}:any=await createBoard(boardName as string);
     redirect(`/boards/${id}`)
 }
     

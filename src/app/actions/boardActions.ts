@@ -3,6 +3,7 @@
 import { authOptions } from "@/lib/authOptions";
 import { liveblocksClient } from "@/lib/liveblockClient";
 import { Liveblocks, RoomInfo } from "@liveblocks/node";
+import { log } from "console";
 import { getServerSession } from "next-auth";
 import uniqueId from "uniqid"
 
@@ -44,10 +45,23 @@ export async function addEmailToBoard(boardId:string, email:string) {
   }
 
 
-  export async function removeEmailToBoard(boardId:string, email:string) {
-    const room = await liveblocksClient.getRoom(boardId);
-    const usersAccesses = room.usersAccesses;
-    delete usersAccesses[email];
-    await liveblocksClient.updateRoom(boardId, {usersAccesses});
+  export async function updateBoard(boardId:string,updateData:{}) {
+    await liveblocksClient.updateRoom(boardId,updateData);
+    console.log(boardId,updateData);
+    
     return true;
   }
+
+  export async function removeEmailFromBoard (boardId: string, email: string) {
+    const room = await liveblocksClient.getRoom (boardId);
+    const usersAccesses:any = room.usersAccesses;
+    usersAccesses[email]=null;
+    await liveblocksClient.updateRoom (boardId, {usersAccesses});
+    return true;
+    }
+
+ export async function deleteBoard(boardId:string) {
+  await liveblocksClient.deleteRoom(boardId);
+  return true;
+  
+ } 

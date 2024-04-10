@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { getUserEmail } from "@/lib/userclient";
 import AccessEmailList from "@/app/components/emailsList";
+import BoardDeleteButton from "@/app/components/boardDeleteButton";
 
 type PageProps={
     params:{
@@ -24,12 +25,16 @@ export default async function BoardSettings({params}:PageProps){
     }
     return(
     <div>
-        <Link className="inline-flex gap-1 mb-4 items-center btn" href={`/boards/${boardId}`}>
+        <div className="flex justify-between">
+            <Link className="inline-flex gap-1 mb-4 items-center btn" href={`/boards/${boardId}`}>
             <FontAwesomeIcon icon={faArrowLeft}/>Go Back To Board
-        </Link>
+            </Link>
+            <BoardDeleteButton boardId={boardId}/>
+        </div>
+        
         <h1 className="text-2xl">Access to Board: {boardInfo.metadata.boardName}</h1>
         <div className="mb-8">
-        <AccessEmailList boardId={boardId} emails={Object.keys(boardInfo.usersAccesses)}/>
+        <AccessEmailList boardId={boardId} usersAccesses={boardInfo.usersAccesses}/>
         </div>
         <NewBoardAccess boardId={boardId}/>
     </div>

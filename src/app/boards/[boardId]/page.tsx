@@ -10,7 +10,7 @@ type PageProps={
     }
 }
 
-export default async function boardPage(props:PageProps){
+export default async function BoardPage(props:PageProps){
     const boardId=props.params.boardId;
     const userEmail=await getUserEmail();
     const boardInfo = await liveblocksClient.getRoom(boardId);
@@ -24,8 +24,7 @@ export default async function boardPage(props:PageProps){
 
     return (
         <div>
-        <h1 className="text-2xl">Board:{boardInfo.metadata.boardName}</h1>
-        <Board id={boardId}/>
+        <Board name={boardInfo.metadata.boardName.toString()} id={boardId}/>
         </div>
     )
 } 
