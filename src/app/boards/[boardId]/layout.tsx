@@ -1,3 +1,9 @@
+'use client'
+
+import { BoardContextProvider } from "@/app/components/boardContext"
+import { RoomProvider } from "@/app/liveblocks.config"
+import { LiveList } from "@liveblocks/client"
+import { useParams } from "next/navigation"
 import React from "react"
 
 
@@ -7,10 +13,18 @@ type PageProps={
 }
 
 export default function BoardLayout({children , modal}:PageProps){
+    const params=useParams();
     return(
-        <>
-        {children}
-        {modal}
-        </>
+        <BoardContextProvider>
+            <RoomProvider id={params.boardId.toString()} 
+            initialStorage={{
+                columns:new LiveList(),
+                cards:new LiveList()
+            }} 
+            initialPresence={{}}>
+                {children}
+                {modal}
+            </RoomProvider>
+        </BoardContextProvider>
     )
 }

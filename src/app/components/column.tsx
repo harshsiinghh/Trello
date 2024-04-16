@@ -6,7 +6,7 @@ import { FormEvent, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faEllipsis, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Card from "./card";
-
+import CancelButton from "./cancelButton";
 type columnProps={
     columnId:string
     name:string;
@@ -86,9 +86,7 @@ columns.delete(columnIndex);
                 className="mt-2 w-full text-white bg-red-500 p-2 items-center justify-center rounded-md flex gap-2">
                 <FontAwesomeIcon icon={faTrash}/>
                 Delete</button>
-                <button onClick={()=>{setRenameMode(false)}} className="flex w-full mt-2 p-2 justify-center uppercase text-sm text-gray-400 items-center gap-2">
-                <FontAwesomeIcon icon={faClose}/>
-                Cancel Edit</button>
+                <CancelButton onClick={()=>setRenameMode(false)}/>
                 </div>
                  
             )}

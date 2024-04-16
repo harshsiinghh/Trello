@@ -9,7 +9,7 @@ import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { FormEvent, useState } from "react";
 import { updateBoard } from "../actions/boardActions";
 import { useRouter } from "next/navigation";
- 
+import { BoardContextProvider } from "./boardContext";
 export default function Board({id,name }:{id:string,name:string}) {
     const [renameMode , setRenameMode]=useState(false);
     const router=useRouter();
@@ -28,6 +28,7 @@ export default function Board({id,name }:{id:string,name:string}) {
 
 
     return(
+        <BoardContextProvider>
         <RoomProvider 
         id={id} 
         initialPresence={{}} 
@@ -60,5 +61,6 @@ export default function Board({id,name }:{id:string,name:string}) {
             </>
         )}</ClientSideSuspense>
         </RoomProvider>
+        </BoardContextProvider>
     )
 }
